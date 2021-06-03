@@ -1,0 +1,28 @@
+{
+    "camera_initialization_options": {
+        "resolution": "1280x720",
+        "framerate": 28
+    },
+
+    "trigger_responses": {
+        "record_to_file": {
+            "format": "h264",
+            "destination_path": "detected_motion_clips",
+            "record_time_before_motion": "5",
+            "record_time_after_motion": "5"
+        }
+    },
+
+    "modes": {
+        "photo_motion_detection": [
+            {
+                "schedules": ["always"],
+                "mode_config": {
+                    "resize_width": 224,
+                    "resize_height": 160
+                },
+                "trigger_responses": ["record_to_file"]
+            }
+        ]
+    }
+}

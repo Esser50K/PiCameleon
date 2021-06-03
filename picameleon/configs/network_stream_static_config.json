@@ -1,0 +1,47 @@
+{
+    "camera_initialization_options": {
+        "resolution": "1280x720",
+        "framerate": 28
+    },
+
+    "trigger_responses": {
+        "record_to_file": {
+            "format": "h264",
+            "destination_path": "detected_motion_clips",
+            "record_time_before_motion": "5",
+            "record_time_after_motion": "5"
+        }
+    },
+
+    "modes": {
+        "network_streaming": [
+            {
+                "schedules": ["always"],
+                "mode_config": {
+                    "prepend_size": true,
+                    "hosts": {
+                        "localhost": {
+                            "port": 12345,
+                            "protocol": "tcp",
+                            "greeting": [0, 1, 0]
+                        },
+                        "localhost": {
+                            "port": 12346,
+                            "protocol": "udp",
+                            "greeting": [0, 1, 0]
+                        }
+                    },
+                    "recording_options": {
+                        "quality": 22,
+                        "profile": "baseline",
+                        "intra_period": 10,
+                        "intra_refresh": "adaptive",
+                        "inline_headers": true,
+                        "bitrate": 3440
+                    }
+                },
+                "trigger_responses": ["record_to_file"]
+            }
+        ]
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "camera_initialization_options": {
+        "resolution": "1280x720",
+        "framerate": 26
+    },
+
+    "modes": {
+        "network_streaming": [
+            {
+                "schedules": ["always"],
+                "mode_config": {
+                    "format": "h264",
+                    "prepend_size": true,
+                    "hostsfile": "configs/streaming_servers.json",
+                    "recording_options": {
+                        "quality": 22,
+                        "profile": "baseline",
+                        "intra_period": 10,
+                        "intra_refresh": "adaptive",
+                        "inline_headers": true,
+                        "bitrate": 3440
+                    }
+                }
+            },
+            {
+                "schedules": ["always"],
+                "mode_config": {
+                    "format": "mpeg",
+                    "hostsfile": "configs/streaming_servers.json"
+                }
+            }
+        ]
+    }
+}
