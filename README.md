@@ -2,7 +2,7 @@
 
 # PiCameleon
 
-Is a daemon program ment to provide the RaspberryPi Camera as a service while running according to a configuration.
+Is a daemon program meant to provide the RaspberryPi Camera as a service while running according to a configuration.
 
 ## Motivation
 
