@@ -1,5 +1,3 @@
-from time import time
-
 class ClientSocketWrap:
     def __init__(self, client_socket, client_address, cleanup=None):
         self.cleanup = cleanup

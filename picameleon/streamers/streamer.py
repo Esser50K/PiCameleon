@@ -17,7 +17,7 @@ SPLIT_FRAME_FORMATS = ("mjpeg", "h264")
 
 
 def get_streamer_instance(port, format, resolution, prepend_size, split_frames, recording_options):
-    if format in SPLIT_FRAME_FORMATS and split_frames:
+    if split_frames:
         return SplitFrameStreamer(port, format, resolution, prepend_size, options=recording_options)
     else:
         return BaseStreamer(port, format, resolution, options=recording_options)

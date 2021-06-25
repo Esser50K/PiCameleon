@@ -66,7 +66,7 @@ class NetowrkTriggerMode(BaseMode):
                     self.redis.set("recorder.node.%d" % (self.trigger_id),
                                 "%s:%d" % (NODE_ADDR, self.listen_port))
             except Exception as e:
-                print("Exception occured setting address on redis:", e)
+                print("Exception occurred setting address on redis:", e)
             finally:
                 sleep(10)
 

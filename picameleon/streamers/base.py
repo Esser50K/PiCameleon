@@ -70,25 +70,22 @@ class BaseStreamer:
                 self.run_streamer()
 
     def run_streamer(self):
-        try:
-            output = self.sub_output if self.sub_output else self.output
-            print("Start recording with %s format, size: %s, on port %d" % (self.format, str(self.resize), self.port))
-            if self.format == "h264":
-                self.options["motion_output"] = self.motion_output
+        output = self.sub_output if self.sub_output else self.output
+        print("Start recording with %s format, size: %s, on port %d" % (self.format, str(self.resize), self.port))
+        if self.format == "h264":
+            self.options["motion_output"] = self.motion_output
 
-            if self.resize[0] == self.camera.resolution[0] and self.resize[1] == self.camera.resolution[1]:
-                self.resize = None
+        if self.resize[0] == self.camera.resolution[0] and self.resize[1] == self.camera.resolution[1]:
+            self.resize = None
 
-            if not self.is_recording:
-                self.camera.start_recording(output,
-                                            format=self.format,
-                                            splitter_port=self.port,
-                                            resize=self.resize,
-                                            **self.options)
-                print("started recording on port %d" % self.port)
-                self.is_recording = True
-        except Exception as e:
-            print("Error trying to start recording on port %d: %s" % (self.port, e))
+        if not self.is_recording:
+            self.camera.start_recording(output,
+                                        format=self.format,
+                                        splitter_port=self.port,
+                                        resize=self.resize,
+                                        **self.options)
+            print("started recording on port %d" % self.port)
+            self.is_recording = True
 
     def wait_recording(self, seconds):
         self.camera.wait_recording(seconds, self.port)

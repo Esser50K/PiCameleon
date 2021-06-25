@@ -14,7 +14,6 @@ from modes.motion_detection import MotionDetectionMode
 from modes.network_streaming import NetworkStreamingMode
 from modes.network_serving import NetworkServingMode
 from modes.network_trigger import NetowrkTriggerMode
-from modes.kafka_streaming import KafkaStreamingMode
 from modes.photo_motion_detection import PhotoMotionDetection
 # Import Trigger Responses
 from trigger_responses.dummy import Dummy
@@ -32,13 +31,11 @@ MODE_MAP = {
     "network_streaming": NetworkStreamingMode,
     "network_serving": NetworkServingMode,
     "network_trigger": NetowrkTriggerMode,
-    "kafka_streaming": KafkaStreamingMode,
     "photo_motion_detection": PhotoMotionDetection
 }
 
 TRIGGER_RESPONSE_MAP = {
     "record_to_file": RecordToFile,
-    "http": FaceRecognition,
     "snapshot": Snapshot,
     "dummy": Dummy
 }
