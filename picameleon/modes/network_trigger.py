@@ -1,15 +1,9 @@
 import os
-import json
 import redis
 import socket
-import struct
 from time import sleep
 from threading import Thread, Lock
 from .base import BaseMode
-from streamers.streamer import Streamer
-from outputs.client_socket_wrap import ClientSocketWrap
-from typing import Tuple
-from queue import Queue
 
 DEFAULT_REDIS_ADDR = "redis_streaming"
 DEFAULT_REDIS_PORT = 6379

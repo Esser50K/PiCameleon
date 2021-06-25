@@ -1,12 +1,10 @@
 import sys
 sys.path.append("/picameleon")
 sys.path.append("/tests")
-from typing import List
 from mocks.socket import MockSocket
 from modes.network_trigger import NetowrkTriggerMode
 import json
 import unittest
-import socket
 import struct
 from unittest.mock import Mock, call, patch
 

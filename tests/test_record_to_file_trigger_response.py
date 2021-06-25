@@ -2,11 +2,9 @@ import sys
 sys.path.append("/picameleon")
 from streamers.streamer import Streamer, ROOT_PATH
 from utils.single_picamera import SinglePiCamera
-from picamerax import PiCameraCircularIO
 from streamers.streamer import Streamer
-from datetime import datetime
 import unittest
-from unittest.mock import Mock, MagicMock, call, patch, ANY
+from unittest.mock import MagicMock, call, patch, ANY
 
 SECONDS_BEFORE = 5
 SECONDS_AFTER = 5

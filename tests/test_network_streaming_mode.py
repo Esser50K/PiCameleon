@@ -2,7 +2,7 @@ import sys
 sys.path.append("/picameleon")
 from modes.network_streaming import NetworkStreamingMode, SocketWrap
 import unittest
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock
 
 mock_streamer = Mock()
 mock_trigger_responses = [Mock() for _ in range(5)]

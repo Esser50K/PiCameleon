@@ -1,11 +1,9 @@
 import sys
 sys.path.append("/picameleon")
 from mode_executor.mode_executor import ModeExecutor
-from croniter import croniter
 from datetime import datetime
-from time import sleep, time
 import unittest
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock, call
 
 mode = Mock()
 

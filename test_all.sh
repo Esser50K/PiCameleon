@@ -8,4 +8,3 @@ docker cp test_all.py picameleon_test:/test_all.py
 docker exec picameleon_test /bin/bash -c 'cd / && python3 -u test_all.py'
 
 docker stop picameleon_test
-docker rm picameleon_test

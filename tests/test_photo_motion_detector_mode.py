@@ -2,9 +2,7 @@ import sys
 sys.path.append("/picameleon")
 from unittest.mock import Mock
 from modes.photo_motion_detection import PhotoMotionDetection
-from threading import Thread
 import numpy
-import json
 import unittest
 
 WIDTH = 224  # Default Width

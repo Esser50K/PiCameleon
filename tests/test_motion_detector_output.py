@@ -3,7 +3,6 @@ sys.path.append("/picameleon")
 from outputs.motion_detector import MotionDetector
 from threading import Thread
 import numpy
-import json
 import unittest
 
 THRESHOLD = 8  # Magnitude of motion vector
