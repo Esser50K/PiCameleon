@@ -1,11 +1,9 @@
 import sys
 sys.path.append("/picameleon")
 from mode_executor.mode_executor import ModeExecutor
-from croniter import croniter
 from datetime import datetime
-from time import sleep, time
 import unittest
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock, call
 
 mode = Mock()
 
@@ -18,7 +16,7 @@ def datetime_minutes(now=None):
                     now.month,
                     now.day,
                     now.hour,
-                    now.minute + 1)
+                    min(59, now.minute + 1))
 
 
 class TestModeExecutor(unittest.TestCase):

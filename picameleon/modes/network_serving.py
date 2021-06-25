@@ -68,16 +68,15 @@ class NetworkServingMode(BaseMode):
         self.redis = redis.Redis(self.redis_addr, self.redis_port)
         while self.is_listening:
             try:
-                self.redis.set("streamer.%d" % (self.stream_id),
-                            "streamer.%d:%d" % (self.stream_id, self.listen_port))
+                self.redis.set("streamer.%d" % self.stream_id,
+                               "streamer.%d:%d" % (self.stream_id, self.listen_port))
                 if NODE_ADDR:
-                    self.redis.set("streamer.node.%d" % (self.stream_id),
-                                "%s:%d" % (NODE_ADDR, self.listen_port))
+                    self.redis.set("streamer.node.%d" % self.stream_id,
+                                   "%s:%d" % (NODE_ADDR, self.listen_port))
             except Exception as e:
                 print("Exception occured setting address on redis:", e)
             finally:
                 sleep(10)
-
 
     def cleanup_output(self, output_id):
         with self._lock:
@@ -96,32 +95,17 @@ class NetworkServingMode(BaseMode):
         request = json.loads(conn.recv(input_length))
         return request["format"], request["bitrate"]
 
-    def streamer_key(self, vformat: str, bitrate: str) -> str:
-        return "%s_%s" % (vformat, bitrate)
-
-    def translate_bitrate(self, bitrate: str) -> int:
-        if bitrate == "vhigh":
-            return 18_000_000
-        elif bitrate == "high":
-            return 6_000_000
-        elif bitrate == "low":
-            return 2_000_000
-        elif bitrate == "vlow":
-            return 500_000
-
-        return 1_000_000
-
     def can_serve_client(self, conn: socket, vformat: str, bitrate: str) -> bool:
-        if self.streamer_key(vformat, bitrate) not in self.streamer_map:
-            if len(self.streamer_map) > self.max_streams:
+        if streamer_key(vformat, bitrate) not in self.streamer_map:
+            if len(self.streamer_map) >= self.max_streams:
                 return False
 
             try:
-                self.streamer_map[self.streamer_key(vformat, bitrate)] = Streamer(vformat,
+                self.streamer_map[streamer_key(vformat, bitrate)] = Streamer(vformat,
                                                                                   prepend_size=self.prepend_size,
                                                                                   recording_options={
                                                                                       **self.recording_options,
-                                                                                      "bitrate": self.translate_bitrate(bitrate)
+                                                                                      "bitrate": translate_bitrate(bitrate)
                                                                                       })
             except Exception as e:
                 print("unable to serve client probably because no more video ports are available:", e)
@@ -129,8 +113,9 @@ class NetworkServingMode(BaseMode):
         return True
 
     def routine(self):
+        conn, client_address = self.server_socket.accept()
+        vformat, bitrate = "", 1_000_000
         try:
-            conn, client_address = self.server_socket.accept()
             vformat, bitrate = self.parse_request(conn)
             with self._lock:
                 if not self.can_serve_client(conn, vformat, bitrate):
@@ -140,15 +125,27 @@ class NetworkServingMode(BaseMode):
 
                 client_socket = ClientSocketWrap(conn, client_address, self.cleanup_output)
                 self.socket_map[client_address] = client_socket
-                self.socket_to_stream[client_address] = self.streamer_key(vformat, bitrate)
+                self.socket_to_stream[client_address] = streamer_key(vformat, bitrate)
 
-                streamer = self.streamer_map[self.streamer_key(vformat, bitrate)]
+                streamer = self.streamer_map[streamer_key(vformat, bitrate)]
                 if len(self.socket_map) >= 1 and not streamer.is_running:
                     streamer.start()
 
                 streamer.output.add_output(client_address, client_socket)
         except Exception as e:
             print("Error in network serving routine:", e)
+            if client_address in self.socket_map.keys():
+                self.socket_map[client_address].close()
+                del self.socket_map[client_address]
+            else:
+                conn.close()
+
+            if client_address in self.socket_to_stream.keys():
+                del self.socket_to_stream[client_address]
+
+            if streamer_key(vformat, bitrate) in self.streamer_map.keys():
+                streamer.stop()
+                del self.streamer_map[streamer_key(vformat, bitrate)]
 
     def _cleanup(self):
         sockets_to_clean = [s for s in self.socket_map.values()]
@@ -168,3 +165,20 @@ class NetworkServingMode(BaseMode):
         if self.redis_announcer:
             self.redis_announcer.join()
             self.redis_announcer = None
+
+
+def streamer_key(vformat: str, bitrate: str) -> str:
+    return "%s_%s" % (vformat, bitrate)
+
+
+def translate_bitrate(bitrate: str) -> int:
+    if bitrate == "vhigh":
+        return 18_000_000
+    elif bitrate == "high":
+        return 6_000_000
+    elif bitrate == "low":
+        return 2_000_000
+    elif bitrate == "vlow":
+        return 500_000
+
+    return 1_000_000

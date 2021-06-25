@@ -1,8 +1,7 @@
 import sys
 sys.path.append("/picameleon")
-from datetime import datetime
 import unittest
-from unittest.mock import MagicMock, patch, call, ANY
+from unittest.mock import patch, ANY
 
 
 class TestSnapshot(unittest.TestCase):

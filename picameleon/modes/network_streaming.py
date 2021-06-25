@@ -1,9 +1,7 @@
 import json
-import struct
 from time import sleep
 from .base import BaseMode
 from outputs.server_socket_wrap import SocketWrap, SOCKET_TYPES
-from utils.single_picamera import SinglePiCamera
 from streamers.streamer import Streamer
 
 DEFAULT_FORMAT = "h264"

@@ -1,10 +1,8 @@
 import sys
 sys.path.append("/picameleon")
 from trigger_responses.trigger_response_store import TriggerResponseStore
-from datetime import datetime
-import io
 import unittest
-from unittest.mock import Mock, MagicMock, ANY, call, patch, mock_open
+from unittest.mock import Mock, ANY, call, patch, mock_open
 
 
 class TestHTTP(unittest.TestCase):

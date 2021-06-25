@@ -17,7 +17,7 @@ class SplitFrameStreamer(BaseStreamer):
         self.stream = io.BytesIO()
         self.last_frame = None
         self.streamer_thread = None
-        self.splitter_string = SPLITTER_STRINGS[format]
+        self.splitter_string = SPLITTER_STRINGS[format] if format in SPLITTER_STRINGS.keys() else None
 
     def _setup_streamer(self):
         self.sub_output = self
@@ -47,7 +47,8 @@ class SplitFrameStreamer(BaseStreamer):
                 print("Error writing next frame:", e)
 
     def write(self, buf):
-        if buf.startswith(self.splitter_string) and self.stream.tell() > 0:
+        if self.splitter_string is not None and \
+                buf.startswith(self.splitter_string) and self.stream.tell() > 0:
             self.stream.seek(0)
             self.last_frame = self.stream.read()
             self.event.set()

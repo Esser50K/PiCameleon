@@ -2,11 +2,9 @@ import sys
 sys.path.append("/picameleon")
 from datetime import datetime
 from modes.base import BaseMode
-from threading import Thread
-from subprocess import Popen
 from time import sleep, time
 import unittest
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock, call
 
 mock_streamer = Mock()
 mock_trigger_responses = [Mock() for _ in range(5)]

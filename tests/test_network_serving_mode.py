@@ -6,12 +6,12 @@ from mocks.socket import MockSocket
 from modes.network_serving import NetworkServingMode, ClientSocketWrap
 import json
 import unittest
-import socket
 import struct
 from unittest.mock import Mock, call, patch
 
 mode = None
 mode_config = {
+    "redis": True,
     "redis_addr": "localhost"
 }
 
