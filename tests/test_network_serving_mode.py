@@ -12,6 +12,7 @@ from unittest.mock import Mock, call, patch
 
 mode = None
 mode_config = {
+    "redis": True,
     "redis_addr": "localhost"
 }
 

@@ -18,7 +18,7 @@ def datetime_minutes(now=None):
                     now.month,
                     now.day,
                     now.hour,
-                    now.minute + 1)
+                    min(59, now.minute + 1))
 
 
 class TestModeExecutor(unittest.TestCase):
