@@ -21,17 +21,18 @@ MOTION_DETECTOR_DETRIGGER = 5  # Number of pics without motion to detrigger
 
 
 class PhotoMotionDetection(BaseMode):
-    def __init__(self, config, trigger_responses):
+    def __init__(self, config: dict, trigger_responses):
         super().__init__(config, trigger_responses)
         self.name = "photo_motion_detection"
 
         # Motion Detection Parameters
-        self.resize_width = config["resize_width"] if "resize_width" in config else WIDTH
-        self.resize_height = config["resize_height"] if "resize_height" in config else HEIGHT
+        if "resize" not in config.keys():
+            config["resize"] = (WIDTH, HEIGHT)
+
         self.threshold = config["threshold"] if "threshold" in config else THRESHOLD
         self.sensitivity = config["sensitivity"] if "sensitivity" in config else SENSITIVITY
         self.min_certainty = config["min_certainty"] if "min_certainty" in config else MIN_CERTAINTY
-        self.pic_buffer = picamerax.array.PiRGBArray(SinglePiCamera(), size=(self.resize_width, self.resize_height))
+        self.pic_buffer = picamerax.array.PiRGBArray(SinglePiCamera(), size=(config["resize"][0], config["resize"][1]))
         self.prev_pic = None
         self.current_certainty = 0
         self.motion_detected = False
@@ -39,7 +40,7 @@ class PhotoMotionDetection(BaseMode):
 
     def get_rgb_pic(self):
         self.pic_buffer.truncate(0)
-        Streamer.take_picture(self.pic_buffer, format='rgb', resize=(self.resize_width, self.resize_height))
+        Streamer.take_picture(self.pic_buffer, format='rgb', capture_options=self.config)
         return self.pic_buffer.array
 
     def pre_routine(self):

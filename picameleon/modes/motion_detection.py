@@ -17,9 +17,9 @@ class MotionDetectionMode(BaseMode):
     def __init__(self, config, trigger_responses):
         super().__init__(config, trigger_responses)
         self.name = "motion_detection"
-        self.resize_width = config["resize_width"]
-        self.resize_height = config["resize_height"]
-        self.streamer = Streamer("h264", resize=(self.resize_width, self.resize_height))
+        self.recording_options = config["recording_options"] if "recording_options" in config else {}
+
+        self.streamer = Streamer("h264", recording_options=self.recording_options)
         # TODO: Add Motion Detector Configs
         if self.streamer.motion_output.has_output(OUTPUT_ID):
             self.motion_detector = self.streamer.motion_output.get_output(OUTPUT_ID)

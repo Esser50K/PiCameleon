@@ -56,7 +56,7 @@ class TestStreamer(unittest.TestCase):
         self.assertEqual(len(Streamer.get_available_ports()), 2)
         streamer3 = Streamer("yuv420")
         self.assertEqual(len(Streamer.get_available_ports()), 1)
-        streamer4 = Streamer("h264", resize="1280x720")
+        streamer4 = Streamer("h264", recording_options={"resize": "1280x720"})
         self.assertEqual(len(Streamer.get_available_ports()), 0)
 
         self.assertIsNot(streamer1, streamer2)
@@ -70,13 +70,13 @@ class TestStreamer(unittest.TestCase):
         self.assertIsInstance(streamer2, SplitFrameStreamer)
         self.assertIsInstance(streamer3, BaseStreamer)
         self.assertIsInstance(streamer4, SplitFrameStreamer)
-        self.assertRaises(Exception, Streamer, "mjpeg", resize="1920x1080")
+        self.assertRaises(Exception, Streamer, "mjpeg", recording_options={"resize": "1920x1080"})
 
         streamer4.stop()
         self.assertEqual(len(Streamer.get_available_ports()), 1)
-        streamer4 = Streamer("mjpeg", resize="1920x1080")
+        streamer4 = Streamer("mjpeg", recording_options={"resize": "1920x1080"})
         self.assertEqual(len(Streamer.get_available_ports()), 0)
-        self.assertRaises(Exception, Streamer, "mjpeg", resize="480p")
+        self.assertRaises(Exception, Streamer, "mjpeg", recording_options={"resize": "480p"})
         streamer1.stop()
         self.assertEqual(len(Streamer.get_available_ports()), 1)
         streamer2.stop()
@@ -111,8 +111,9 @@ class TestStreamer(unittest.TestCase):
         self.assertIsNone(Streamer._picture_port)
 
         # Take picture with all possible extra args
-        Streamer.take_picture("test_output.jpg", format="randomFormat",
-                              resize=(100, 200), **{"option1": 1, "option2": 2})
+        Streamer.take_picture("test_output.jpg",
+                              format="randomFormat",
+                              **{"option1": 1, "option2": 2, "resize": (100,200)})
 
         # Check everything was returned after picture was taken
         self.assertEqual(len(Streamer.get_available_ports()), 4)

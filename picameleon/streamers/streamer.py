@@ -20,7 +20,7 @@ def get_streamer_instance(port, format, resolution, prepend_size, split_frames, 
     if split_frames:
         return SplitFrameStreamer(port, format, resolution, prepend_size, options=recording_options)
     else:
-        return BaseStreamer(port, format, resolution, options=recording_options)
+        return BaseStreamer(port, format, options=recording_options)
 
 
 def ordered_dict_hash(dictionary):
@@ -43,12 +43,14 @@ class Streamer:
     def __new__(cls, format,
                 id_output=(None, None),
                 id_motion_output=(None, None),
-                resize=None,
                 prepend_size=False,
                 split_frames=True,
-                recording_options={}):
+                recording_options=None):
         with cls._lock:
-            resolution = resize if resize else SinglePiCamera().resolution
+            if recording_options is None:
+                recording_options = {"resize": SinglePiCamera().resolution}
+
+            resolution = recording_options["resize"]
             res_str = "_".join(map(str, resolution))
             port_key = "%s_%s_%s_%s" % (format, res_str, str(split_frames), ordered_dict_hash(recording_options))
             outID, output = id_output[0], id_output[1]
@@ -118,7 +120,7 @@ class Streamer:
                 cls._picture_port = None
 
     @classmethod
-    def take_picture(cls, output, format="jpeg", resize=None, **capture_options):
+    def take_picture(cls, output, format="jpeg", **capture_options):
         """Picture ports can be reused between components that have the same
         requirements as they don't need constant hold on it as video recorders do.
         """
@@ -128,7 +130,6 @@ class Streamer:
                 SinglePiCamera().capture(output,
                                          splitter_port=port,
                                          format=format,
-                                         resize=resize,
                                          use_video_port=True,
                                          **capture_options)
                 cls._return_port_availability(port)
