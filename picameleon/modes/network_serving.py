@@ -51,6 +51,7 @@ class NetworkServingMode(BaseMode):
     def pre_routine(self):
         # Initialize server socket
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.listen_addr, self.listen_port))
         self.server_socket.listen()
         self.is_listening = True
@@ -108,7 +109,6 @@ class NetworkServingMode(BaseMode):
             try:
                 vformat = options["format"]
                 del options["format"]
-                print({**self.recording_options, **options})
                 self.streamer_map[stream_key] = Streamer(vformat,
                                                          prepend_size=self.prepend_size,
                                                          recording_options={

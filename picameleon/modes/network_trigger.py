@@ -38,6 +38,7 @@ class NetowrkTriggerMode(BaseMode):
     def pre_routine(self):
         # Initialize server socket
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.listen_addr, self.listen_port))
         self.server_socket.listen()
         self.is_listening = True
@@ -81,13 +82,13 @@ class NetowrkTriggerMode(BaseMode):
                 self.trigger()
             conn.close()
         except Exception as e:
-            print("Error in network serving routine:", e)
+            print("Error in network trigger routine:", e)
 
     def _cleanup(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
                 s.connect((self.listen_addr, self.listen_port))
-            except:
+            except socket.error:
                 pass
 
         self.server_socket.close()
