@@ -8,13 +8,14 @@ from threading import Thread, Lock
 
 
 class BaseStreamer:
-    def __init__(self, port, format, resize, options):
+    def __init__(self, port, format, options):
         self.camera = SinglePiCamera()
         self.port = port
         self.format = format
-        self.resize = resize
+        self.resize = self.parse_resize(options["resize"])
+        del options["resize"]
         self.output = WriterOutputHolder()
-        self.motion_output = MotionOutputHolder(size=self.parse_resize(resize))
+        self.motion_output = MotionOutputHolder(size=self.parse_resize(self.resize))
         self.sub_output = None
         self.options = options
         self.is_running = False

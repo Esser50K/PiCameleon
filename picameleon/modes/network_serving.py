@@ -8,7 +8,6 @@ from threading import Thread, Lock
 from .base import BaseMode
 from streamers.streamer import Streamer
 from outputs.client_socket_wrap import ClientSocketWrap
-from typing import Tuple
 from queue import Queue
 
 DEFAULT_MAX_STREAMS = 2
@@ -89,24 +88,33 @@ class NetworkServingMode(BaseMode):
                     del self.streamer_map[streamer_id]
                 del self.socket_to_stream[output_id]
 
-    def parse_request(self, conn: socket) -> Tuple[str, str]:
+    def parse_request(self, conn: socket) -> dict:
         conn.settimeout(5)
         input_length = struct.unpack('<L', conn.recv(4))[0]
         request = json.loads(conn.recv(input_length))
-        return request["format"], request["bitrate"]
+        return request
 
-    def can_serve_client(self, conn: socket, vformat: str, bitrate: str) -> bool:
-        if streamer_key(vformat, bitrate) not in self.streamer_map:
+    def can_serve_client(self, stream_key: str, options = None) -> bool:
+        default_options = {"format": "h264"}
+        if options is None:
+            options = default_options
+        else:
+            options = {**default_options, **options}
+
+        if stream_key not in self.streamer_map:
             if len(self.streamer_map) >= self.max_streams:
                 return False
 
             try:
-                self.streamer_map[streamer_key(vformat, bitrate)] = Streamer(vformat,
-                                                                                  prepend_size=self.prepend_size,
-                                                                                  recording_options={
-                                                                                      **self.recording_options,
-                                                                                      "bitrate": translate_bitrate(bitrate)
-                                                                                      })
+                vformat = options["format"]
+                del options["format"]
+                print({**self.recording_options, **options})
+                self.streamer_map[stream_key] = Streamer(vformat,
+                                                         prepend_size=self.prepend_size,
+                                                         recording_options={
+                                                             **self.recording_options,
+                                                             **options
+                                                             })
             except Exception as e:
                 print("unable to serve client probably because no more video ports are available:", e)
                 return False
@@ -114,20 +122,21 @@ class NetworkServingMode(BaseMode):
 
     def routine(self):
         conn, client_address = self.server_socket.accept()
-        vformat, bitrate = "", 1_000_000
+        stream_key = ""
         try:
-            vformat, bitrate = self.parse_request(conn)
+            options = self.parse_request(conn)
+            stream_key = streamer_key(options)
             with self._lock:
-                if not self.can_serve_client(conn, vformat, bitrate):
+                if not self.can_serve_client(stream_key, options):
                     conn.sendall(struct.pack('<L', 0))
                     conn.close()
                     return
 
                 client_socket = ClientSocketWrap(conn, client_address, self.cleanup_output)
                 self.socket_map[client_address] = client_socket
-                self.socket_to_stream[client_address] = streamer_key(vformat, bitrate)
+                self.socket_to_stream[client_address] = stream_key
 
-                streamer = self.streamer_map[streamer_key(vformat, bitrate)]
+                streamer = self.streamer_map[stream_key]
                 if len(self.socket_map) >= 1 and not streamer.is_running:
                     streamer.start()
 
@@ -136,16 +145,15 @@ class NetworkServingMode(BaseMode):
             print("Error in network serving routine:", e)
             if client_address in self.socket_map.keys():
                 self.socket_map[client_address].close()
-                del self.socket_map[client_address]
             else:
                 conn.close()
 
             if client_address in self.socket_to_stream.keys():
                 del self.socket_to_stream[client_address]
 
-            if streamer_key(vformat, bitrate) in self.streamer_map.keys():
+            if stream_key in self.streamer_map.keys():
                 streamer.stop()
-                del self.streamer_map[streamer_key(vformat, bitrate)]
+                del self.streamer_map[stream_key]
 
     def _cleanup(self):
         sockets_to_clean = [s for s in self.socket_map.values()]
@@ -167,18 +175,8 @@ class NetworkServingMode(BaseMode):
             self.redis_announcer = None
 
 
-def streamer_key(vformat: str, bitrate: str) -> str:
-    return "%s_%s" % (vformat, bitrate)
-
-
-def translate_bitrate(bitrate: str) -> int:
-    if bitrate == "vhigh":
-        return 18_000_000
-    elif bitrate == "high":
-        return 6_000_000
-    elif bitrate == "low":
-        return 2_000_000
-    elif bitrate == "vlow":
-        return 500_000
-
-    return 1_000_000
+def streamer_key(options) -> str:
+    stream_key = ""
+    for key in sorted(options.keys()):
+        stream_key += "%s_%s" % (key, str(options[key]))
+    return stream_key

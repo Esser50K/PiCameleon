@@ -26,10 +26,8 @@ class NetworkStreamingMode(BaseMode):
             return
 
         prepend_size = config["prepend_size"] if "prepend_size" in config else False
-        resize = config["resize"] if "resize" in config else None
         recording_options = config["recording_options"] if "recording_options" in config else {}
-        self.streamer = Streamer(self.format, prepend_size=prepend_size,
-                                 resize=resize, recording_options=recording_options)
+        self.streamer = Streamer(self.format, prepend_size=prepend_size, recording_options=recording_options)
 
     def _read_hosts_file(self, retry=False, retries=5, timeout=2):
         retry_count = 0

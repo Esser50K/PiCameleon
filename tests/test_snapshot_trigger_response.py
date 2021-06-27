@@ -15,7 +15,6 @@ class TestSnapshot(unittest.TestCase):
         trigger_reponse._trigger_response()
         mocked_capture.assert_called_once_with(ANY,
                                                format='jpeg',
-                                               resize=None,
                                                splitter_port=0,
                                                use_video_port=True)
 

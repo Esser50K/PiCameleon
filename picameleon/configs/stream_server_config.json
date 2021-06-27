@@ -23,11 +23,21 @@
         "schedules": ["always"],
         "mode_config": {
           "prepend_size": true,
+          "listen_port": 5566,
           "recording_options": {
             "quality": 22,
             "profile": "high",
             "intra_period": 15,
             "inline_headers": true
+          }
+        }
+      },
+      {
+        "schedules": ["always"],
+        "mode_config": {
+          "prepend_size": true,
+          "recording_options": {
+            "resize": ["640", "480"]
           }
         }
       }

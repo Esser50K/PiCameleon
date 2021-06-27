@@ -18,8 +18,7 @@
             {
                 "schedules": ["always"],
                 "mode_config": {
-                    "resize_width": 224,
-                    "resize_height": 160
+                    "resize": [224, 160]
                 },
                 "trigger_responses": ["record_to_file"]
             }

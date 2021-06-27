@@ -10,8 +10,11 @@ SPLITTER_STRINGS = {
 
 
 class SplitFrameStreamer(BaseStreamer):
-    def __init__(self, port, format, resolution, prepend_size=False, options={}):
-        super().__init__(port, format, resolution, options)
+    def __init__(self, port, format, prepend_size=False, options=None):
+        if options is None:
+            options = {}
+
+        super().__init__(port, format, options)
         self.event = Event()
         self.prepend_size = prepend_size
         self.stream = io.BytesIO()
@@ -46,14 +49,23 @@ class SplitFrameStreamer(BaseStreamer):
             except Exception as e:
                 print("Error writing next frame:", e)
 
+    def can_write(self, buf):
+        # check if buffer starts with splitter string if it exists
+        # if it doesn't exist then just check the stream is not empty
+        return ((self.splitter_string is not None and \
+                buf.startswith(self.splitter_string)) or \
+               (self.splitter_string is None)) and \
+               self.stream.tell() > 0
+
+
     def write(self, buf):
-        if self.splitter_string is not None and \
-                buf.startswith(self.splitter_string) and self.stream.tell() > 0:
+        if self.can_write():
             self.stream.seek(0)
             self.last_frame = self.stream.read()
             self.event.set()
             self.stream.seek(0)
             self.stream.truncate()
+
         self.stream.write(buf)
 
     def _teardown_streamer(self):

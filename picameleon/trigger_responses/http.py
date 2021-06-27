@@ -13,10 +13,13 @@ HTTP_TRIGGER_RESPONSE_NAME = "http"
 
 
 class HTTP(BaseTriggerResponse):
-    def __init__(self, http_service_urls={}, **recording_options):
+    def __init__(self, http_service_urls=None, **capture_options):
+        if http_service_urls is None:
+            http_service_urls = {}
+
         super().__init__(use_detrigger=True)
         self.trigger_name = HTTP_TRIGGER_RESPONSE_NAME
-        self.recording_options = recording_options
+        self.capture_options = capture_options
         # the key is the url the value is a boolean if a picture should be sent with the request
         self.http_service_urls = http_service_urls
 
@@ -30,11 +33,10 @@ class HTTP(BaseTriggerResponse):
         return result
 
     def _trigger_response(self, trigger_args={}):
+        tmp_dir = tempfile.TemporaryDirectory()
+        image_path = tmp_dir.name + '/http_' + str(int(time())) + '.jpg'
         try:
-            tmp_dir = tempfile.TemporaryDirectory()
-            image_path = tmp_dir.name + '/http_' + str(int(time())) + '.jpg'
-            Streamer.take_picture(image_path, format='jpeg',
-                                  **self.recording_options)
+            Streamer.take_picture(image_path, format='jpeg', **self.capture_options)
             for url, send_photo in self.http_service_urls.items():
                 result = self._open_and_send(
                     url, image_path) if send_photo else requests.post(url)
