@@ -59,7 +59,7 @@ class SplitFrameStreamer(BaseStreamer):
 
 
     def write(self, buf):
-        if self.can_write():
+        if self.can_write(buf):
             self.stream.seek(0)
             self.last_frame = self.stream.read()
             self.event.set()

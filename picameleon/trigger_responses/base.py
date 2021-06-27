@@ -74,14 +74,14 @@ class BaseTriggerResponse:
     def _cleanup_trigger_response(self):
         pass
 
-    def _trigger_response(self, trigger_args={}):
+    def _trigger_response(self, trigger_args=None):
         """
         Needs to be overriden by actual trigger response
         """
         pass
 
     def _listen_for_trigger(self):
-        while self.trigger_event.wait() and self.listening:
+        while self.listening and self.trigger_event.wait():
             self.trigger_event.clear()
             # don't spam the trigger
             if not time() - self.last_trigger_time < self.cooldown_period:

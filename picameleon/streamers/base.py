@@ -15,7 +15,7 @@ class BaseStreamer:
         self.resize = self.parse_resize(options["resize"])
         del options["resize"]
         self.output = WriterOutputHolder()
-        self.motion_output = MotionOutputHolder(size=self.parse_resize(self.resize))
+        self.motion_output = MotionOutputHolder(size=self.resize)
         self.sub_output = None
         self.options = options
         self.is_running = False
@@ -28,7 +28,7 @@ class BaseStreamer:
             if type(resize) is str:
                 width, height = map(int, resize.split("x"))
                 return (width, height)
-            if type(resize) is tuple:
+            if type(resize) is tuple or type(resize) is list:
                 return (resize[0], resize[1])
         except Exception as e:
             print("error parsing resize parameter:", e)
@@ -82,8 +82,8 @@ class BaseStreamer:
         if not self.is_recording:
             self.camera.start_recording(output,
                                         format=self.format,
+                                        resize = self.resize,
                                         splitter_port=self.port,
-                                        resize=self.resize,
                                         **self.options)
             print("started recording on port %d" % self.port)
             self.is_recording = True

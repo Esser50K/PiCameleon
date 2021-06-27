@@ -6,11 +6,11 @@ from datetime import datetime
 
 
 class BaseMode:
-    def __init__(self, config, trigger_responses=[]):
+    def __init__(self, config, trigger_responses=None):
         self.name = "base"
         self.config = config
         self.finish_time = None
-        self.trigger_responses = trigger_responses
+        self.trigger_responses = [] if trigger_responses is None else trigger_responses
         self.is_running = False
         self.runner_thread = None
         self.streamer = None  # Subclass must have a Streamer object here

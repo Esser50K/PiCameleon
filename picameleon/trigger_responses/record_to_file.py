@@ -34,7 +34,7 @@ class RecordToFile(BaseTriggerResponse):
         self.streamer.output = self.before_buffer
         self.streamer.start()
 
-    def _trigger_response(self, trigger_args={}):
+    def _trigger_response(self, trigger_args=None):
         # Mutliple modes can use this trigger response.
         # Don't record for more than 1 trigger response
         if not self.is_triggered:
@@ -62,5 +62,5 @@ class RecordToFile(BaseTriggerResponse):
             self.is_triggered = False
 
     def _cleanup_trigger_response(self):
-        self.before_buffer.clear()
         self.streamer.stop()
+        self.before_buffer.clear()

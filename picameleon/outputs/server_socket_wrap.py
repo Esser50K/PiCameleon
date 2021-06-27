@@ -74,7 +74,6 @@ class SocketWrap:
                         self.socket.sendto(data, (self.host, self.port))
             except Exception as e:
                 print("Error occured, socket disconnected.", e)
-                self.close()
                 self._is_connected = False
                 return False
         return True

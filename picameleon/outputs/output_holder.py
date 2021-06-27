@@ -87,7 +87,11 @@ class WriterOutputHolder(Thread, OutputHolder):
                             futures.append((oid, pool.submit(output.write, buffer)))
                         for oid, future in futures:
                             # Wait for result, if false remove the output
-                            if not future.result():
+                            try:
+                                if not future.result():
+                                    del self.outputs[oid]
+                            except Exception as e:
+                                print("error writing to output %s %s:" % (oid, self.outputs[oid]), e)
                                 del self.outputs[oid]
 
                     #  Check if its a split notifier
@@ -98,11 +102,10 @@ class WriterOutputHolder(Thread, OutputHolder):
                         self.outputs_to_add = {}
                         self.rebind_wait.set()
                         continue
-
                 except IndexError:
                     sleep(0.05)
                 except Exception as e:
-                    print("Error writing frame to outputs", e)
+                    print("Error writing frame to outputs:", e)
                     print("threads:\n", active_count(), enumerate())
                     self.stop()
 

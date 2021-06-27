@@ -37,7 +37,7 @@
         "mode_config": {
           "prepend_size": true,
           "recording_options": {
-            "resize": ["640", "480"]
+            "resize": [640, 480]
           }
         }
       }

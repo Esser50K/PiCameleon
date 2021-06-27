@@ -16,9 +16,9 @@ ROOT_PATH = '{0}/../'.format(os.path.dirname(os.path.abspath(__file__)))
 SPLIT_FRAME_FORMATS = ("mjpeg", "h264")
 
 
-def get_streamer_instance(port, format, resolution, prepend_size, split_frames, recording_options):
+def get_streamer_instance(port, format, prepend_size, split_frames, recording_options):
     if split_frames:
-        return SplitFrameStreamer(port, format, resolution, prepend_size, options=recording_options)
+        return SplitFrameStreamer(port, format, prepend_size, options=recording_options)
     else:
         return BaseStreamer(port, format, options=recording_options)
 
@@ -49,6 +49,8 @@ class Streamer:
         with cls._lock:
             if recording_options is None:
                 recording_options = {"resize": SinglePiCamera().resolution}
+            elif "resize" not in recording_options.keys():
+                recording_options = {"resize": SinglePiCamera().resolution, **recording_options}
 
             resolution = recording_options["resize"]
             res_str = "_".join(map(str, resolution))
@@ -69,7 +71,7 @@ class Streamer:
 
             port = cls._available_ports.pop(0)
             new_streamer = get_streamer_instance(
-                port, format, resolution, prepend_size, split_frames, recording_options)
+                port, format, prepend_size, split_frames, recording_options)
             if output and outID:
                 new_streamer.output.add_output(outID, output)
             if motion_output and moutID:
