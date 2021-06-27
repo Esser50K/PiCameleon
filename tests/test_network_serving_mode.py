@@ -1,8 +1,6 @@
 import sys
 sys.path.append("/picameleon")
-sys.path.append("/tests")
-from typing import List
-from mocks.socket import MockSocket
+from .mocks.socket import MockSocket
 from modes.network_serving import NetworkServingMode, ClientSocketWrap
 import json
 import unittest
@@ -41,7 +39,7 @@ class TestNetworkTriggerMode(unittest.TestCase):
         mode = NetworkServingMode(mode_config, {})
         mode.pre_routine()
         client_address = "localhost:1234"
-        request = json.dumps({"format": "h264", "bitrate": "vhigh"})
+        request = json.dumps({"format": "h264", "bitrate": 1_000_000})
         mode.server_socket.accept = Mock(return_value=(MockSocket(
             [struct.pack("<L", len(request)), request]), client_address))
         mode.routine()
@@ -49,7 +47,7 @@ class TestNetworkTriggerMode(unittest.TestCase):
         self.assertTrue(client_address in mode.socket_map.keys())
         self.assertTrue(client_address in mode.socket_to_stream.keys())
         self.assertTrue(
-            mode.streamer_map["h264_vhigh"].output.has_output(client_address))
+            mode.streamer_map["h264_1000000"].output.has_output(client_address))
         mode.socket_map[client_address].close()
         self.assertEqual(len(mode.socket_map), 0)
 

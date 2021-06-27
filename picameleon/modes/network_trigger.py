@@ -82,7 +82,7 @@ class NetowrkTriggerMode(BaseMode):
                 self.trigger()
             conn.close()
         except Exception as e:
-            print("Error in network serving routine:", e)
+            print("Error in network trigger routine:", e)
 
     def _cleanup(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

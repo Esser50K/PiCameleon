@@ -66,10 +66,10 @@ class PhotoMotionDetection(BaseMode):
         # Simple Motion Detection Algorithm
         diffCount = 0
         found_motion_this_pic = False
-        for w in range(0, self.resize_width):
+        for w in range(0, self.config["resize"][0]):
             if found_motion_this_pic:
                 break
-            for h in range(0, self.resize_height):
+            for h in range(0, self.config["resize"][1]):
                 # get the diff of the pixel. Conversion to int
                 # is required to avoid unsigned short overflow.
                 diff_r = abs(int(self.prev_pic[h][w][0]) - int(new_pic[h][w][0]))
