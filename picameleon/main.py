@@ -4,7 +4,7 @@ import signal
 from streamers.streamer import Streamer
 from croniter import croniter
 from datetime import datetime
-from utils.globals import GLOBALS
+from utils.consts import GLOBALS
 from utils.single_picamera import SinglePiCamera
 from mode_executor.mode_executor import ModeExecutor
 from apscheduler.executors.pool import ThreadPoolExecutor

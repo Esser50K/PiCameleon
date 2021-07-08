@@ -2,7 +2,7 @@ import os
 import redis
 import socket
 from time import sleep
-from threading import Thread, Lock
+from threading import Thread
 from .base import BaseMode
 
 DEFAULT_REDIS_ADDR = "redis_streaming"

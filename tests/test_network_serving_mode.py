@@ -1,7 +1,7 @@
 import sys
 sys.path.append("/picameleon")
-from .mocks.socket import MockSocket
-from modes.network_serving import NetworkServingMode, ClientSocketWrap
+from .mocks.mock_socket import MockSocket
+from modes.network_serving import NetworkServingMode
 import json
 import unittest
 import struct
@@ -16,7 +16,6 @@ mode_config = {
 
 class TestNetworkTriggerMode(unittest.TestCase):
     def tearDown(self):
-        global mode
         if mode:
             mode._cleanup()
 
