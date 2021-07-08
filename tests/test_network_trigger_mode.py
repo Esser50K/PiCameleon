@@ -1,6 +1,6 @@
 import sys
 sys.path.append("/picameleon")
-from .mocks.socket import MockSocket
+from .mocks.mock_socket import MockSocket
 from modes.network_trigger import NetowrkTriggerMode
 import json
 import unittest

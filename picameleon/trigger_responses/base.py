@@ -1,7 +1,7 @@
 from time import time
 from threading import Thread, Event
 from trigger_responses.trigger_response_store import TriggerResponseStore
-from utils.globals import GLOBALS, TRIGGER_COOLDOWN_TIME
+from utils.consts import GLOBALS, TRIGGER_COOLDOWN_TIME
 
 
 class BaseTriggerResponse:

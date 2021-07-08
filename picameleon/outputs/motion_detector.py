@@ -3,9 +3,8 @@ The Motion Detection class.
 """
 
 import numpy
-import picamerax.array
 from threading import Event
-from utils.globals import GLOBALS, MOTION_DETECTOR_THRESHOLD, MOTION_DETECTOR_SENSITIVITY
+from utils.consts import GLOBALS, MOTION_DETECTOR_THRESHOLD, MOTION_DETECTOR_SENSITIVITY
 
 OUTPUT_ID = "motion_detector"
 

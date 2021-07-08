@@ -6,7 +6,6 @@ by passing the captured content through the various output analyzers
 """
 
 from .output_holder import OutputHolder
-from threading import Thread
 from utils.single_picamera import SinglePiCamera
 from picamerax.array import PiMotionAnalysis
 

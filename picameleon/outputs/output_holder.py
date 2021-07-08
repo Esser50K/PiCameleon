@@ -5,12 +5,10 @@ This class helps streamers reuse camera ports for the same format and size combi
 by passing the captured content through the various output analyzers
 """
 
-import asyncio
 from time import sleep
 from collections import deque
 from threading import Thread, Event, Lock, active_count, enumerate
 from concurrent.futures import ThreadPoolExecutor
-from utils.single_picamera import SinglePiCamera
 
 
 class OutputHolder:

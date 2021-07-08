@@ -1,6 +1,6 @@
 import sys
 sys.path.append("/picameleon")
-from modes.network_streaming import NetworkStreamingMode, SocketWrap
+from modes.network_streaming import NetworkStreamingMode
 import unittest
 from unittest.mock import Mock
 

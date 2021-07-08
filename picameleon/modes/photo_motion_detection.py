@@ -64,7 +64,7 @@ class PhotoMotionDetection(BaseMode):
         new_pic = self.get_rgb_pic()
 
         # Simple Motion Detection Algorithm
-        diffCount = 0
+        diff_count = 0
         found_motion_this_pic = False
         for w in range(0, self.config["resize"][0]):
             if found_motion_this_pic:
@@ -77,8 +77,8 @@ class PhotoMotionDetection(BaseMode):
                 diff_b = abs(int(self.prev_pic[h][w][2]) - int(new_pic[h][w][2]))
                 total_diff = diff_r + diff_g + diff_b
                 if total_diff > self.threshold:
-                    diffCount += 1
-                    if diffCount > self.sensitivity:
+                    diff_count += 1
+                    if diff_count > self.sensitivity:
                         self.current_certainty += 1
                         found_motion_this_pic = True
                         break
@@ -87,7 +87,7 @@ class PhotoMotionDetection(BaseMode):
             self.current_certainty = 0
             return True
 
-        if diffCount < self.sensitivity and self.current_certainty > 0:
+        if diff_count < self.sensitivity and self.current_certainty > 0:
             self.current_certainty -= 1
         self.prev_pic = new_pic
         return False

@@ -1,11 +1,7 @@
 """Mock socket module used by the smtpd and smtplib tests.
 """
-
-# imported for _GLOBAL_DEFAULT_TIMEOUT
-import socket as socket_module
-
 # Mock socket module
-_defaulttimeout = None
+_defaulttimeout = 5
 _reply_data = None
 
 # This is used to queue up data to be read through socket.makefile, typically
@@ -92,9 +88,9 @@ class MockSocket:
         return handle
 
     def sendall(self, buffer, flags=None):
-        self.last = data
-        self.output.append(data)
-        return len(data)
+        self.last = buffer
+        self.output.append(buffer)
+        return len(buffer)
 
     def send(self, data, flags=None):
         self.last = data
@@ -112,13 +108,13 @@ def socket(family=None, type=None, proto=None):
     return MockSocket()
 
 
-def create_connection(address, timeout=socket_module._GLOBAL_DEFAULT_TIMEOUT):
+def create_connection(address, timeout=_defaulttimeout):
     try:
         int_port = int(address[1])
     except ValueError:
         raise error
     ms = MockSocket()
-    if timeout is socket_module._GLOBAL_DEFAULT_TIMEOUT:
+    if timeout is _defaulttimeout:
         timeout = getdefaulttimeout()
     ms.settimeout(timeout)
     return ms
