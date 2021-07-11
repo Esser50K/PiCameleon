@@ -4,7 +4,7 @@ from typing import Dict, Any
 from json import dumps
 from dataclasses import dataclass
 from threading import Thread, Event, Lock
-from outputs import WriterOutputHolder
+from ..outputs import WriterOutputHolder
 
 DEFAULT_FRAME_FETCH_CHUNK_SIZE = 4096
 DEFAULT_STREAM_SERVER_PORT = 5555
@@ -34,7 +34,7 @@ class Client:
         if self.current_streams[stream_id].event.wait(timeout):
             return self.current_frames[stream_id]
 
-    def stop_stream(self, stream_id):
+    def stop_stream(self, stream_id: str):
         with self.__lock:
             if stream_id in self.current_streams.keys():
                 self.current_streams[stream_id].running = False
@@ -48,10 +48,10 @@ class Client:
                 del self.current_streams[stream_id]
                 del self.current_frames[stream_id]
 
-    def __is_receiver(self, stream_id):
+    def __is_receiver(self, stream_id: str):
         return self.current_streams[stream_id].port != 0
 
-    def __stop_receiver(self, stream_id):
+    def __stop_receiver(self, stream_id: str):
         if stream_id in self.current_streams.keys():
             self.current_streams[stream_id].running = False
             try:
@@ -60,7 +60,7 @@ class Client:
             except socket.error:
                 pass
 
-    def serve_stream_receiver(self, stream_id, port):
+    def serve_stream_receiver(self, stream_id: str, port: int):
         with self.__lock:
             event = Event()
             thread = Thread(target=self.__read_stream, args=(stream_id, port))
@@ -68,7 +68,7 @@ class Client:
             self.current_frames[stream_id] = b''
             thread.start()
 
-    def __read_stream(self, stream_id, port):
+    def __read_stream(self, stream_id: str, port: int):
         server_socket = socket.socket()
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind(('0.0.0.0', port))
@@ -89,26 +89,30 @@ class Client:
                 if stream_id in self.output_holders.keys():
                     self.output_holders[stream_id].write(frame)
                 self.current_streams[stream_id].event.set()
-        except:
-            with self.__lock:
-                del self.current_streams[stream_id]
-                del self.current_frames[stream_id]
+        except Exception as e:
+            print("error reading stream:", e)
         finally:
             connection.close()
             self.current_streams[stream_id].event.set()
+            with self.__lock:
+                del self.current_streams[stream_id]
+                del self.current_frames[stream_id]
 
-    def fetch_stream(self, stream_id, stream_format,
+    def fetch_stream(self,
+                     stream_id: str,
+                     stream_format: str,
                      port=DEFAULT_STREAM_SERVER_PORT,
-                     bitrate=None,
+                     resize: list = None,
+                     bitrate: int = None,
                      frame_size=DEFAULT_FRAME_FETCH_CHUNK_SIZE,
-                     size_prepended=True):
+                     size_prepended=True) -> None:
         with self.__lock:
             if stream_id in self.current_streams.keys():
                 raise Exception("stream with id %s is still active" % stream_id)
 
             event = Event()
             thread = Thread(target=self.__fetch_stream,
-                            args=(stream_id, stream_format, port, bitrate, frame_size, size_prepended))
+                            args=(stream_id, stream_format, port, resize, bitrate, frame_size, size_prepended))
             self.current_streams[stream_id] = StreamInfo(event, thread, True)
             self.current_frames[stream_id] = b''
             thread.start()
@@ -135,11 +139,14 @@ class Client:
                 self.output_holders[stream_id].stop()
                 self.output_holders[stream_id].shutdown()
 
-    def __fetch_stream(self, stream_id, stream_format,
+    def __fetch_stream(self,
+                       stream_id: str,
+                       stream_format: str,
                        port=DEFAULT_STREAM_SERVER_PORT,
-                       bitrate=None,
+                       resize: tuple = None,
+                       bitrate: int = None,
                        frame_size=DEFAULT_FRAME_FETCH_CHUNK_SIZE,
-                       size_prepended=True):
+                       size_prepended=True) -> None:
         sock = socket.socket()
         sock.settimeout(1)
         try:
@@ -156,6 +163,8 @@ class Client:
             stream_request = {"format": stream_format}
             if bitrate:
                 stream_request["bitrate"] = bitrate
+            if resize:
+                stream_request["resize"] = resize
 
             stream_request = dumps(stream_request).encode("utf-8")
             request_size = len(stream_request)
