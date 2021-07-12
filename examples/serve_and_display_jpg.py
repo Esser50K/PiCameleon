@@ -2,7 +2,6 @@ import cv2
 import sys
 import numpy as np
 from picameleon import Client
-from threading import Event
 
 address = "localhost"
 if len(sys.argv) > 1:

@@ -5,6 +5,12 @@ to get your instance running with certain capabilitites.
 
 These are then used in the examples by the client.
 
+Before running any of the examples make sure you have all the dependencies installed on your system:
+
+```
+pip3 install picameleon numpy opencv-python
+```
+
 ## fetch_and_display_bgr
 
 The [exmaple](fetch_and_display_bgr.py) shows how to request resized frames from picameleon in the bgr format.
