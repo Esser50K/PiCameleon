@@ -42,3 +42,15 @@ Full Example:
 ```
 docker run -d --name picameleon --privileged -v /opt/vc:/opt/vc --env LD_LIBRARY_PATH=/opt/vc/lib -e CONFIG_FILE=stream_server_config.json picameleon:latest
 ```
+
+## Client Installation
+
+PiCameleon includes a client package that can be installed on pretty much any system with:
+
+```
+pip3 install picameleon
+```
+
+Examples on how to use it can be found in the [examples](examples) folder.
+
+Feel free to make suggestions on how to improve the API and submit feature requests.
