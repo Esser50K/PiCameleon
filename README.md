@@ -31,6 +31,21 @@ Some modes (such as the [motion_detection](picameleon/modes/motion_detection.py)
 
 Example configurations can be found in the [configs](picameleon/configs) folder.
 
+## Build
+
+Build the container locally (takes a while but should be accelerated through piwheels):
+
+```
+docker built -t picameleon:latest .
+```
+
+in case you are building it for the raspberrypi zero you need to specify the correct Dockerfile:
+
+```
+docker built -t picameleon:latest -f Dockerfile.zero .
+```
+
+
 ## Deployment
 
 Launching the daemon in a Docker container is supported and also recommended. There are two Dockerfiles which only differ in their base image to support the RaspberryPi Zero and all the other versions of the Pi.
