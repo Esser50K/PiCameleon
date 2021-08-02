@@ -44,9 +44,7 @@ class Client:
                     self.output_holders[stream_id].stop()
                     self.output_holders[stream_id].shutdown()
                     del self.output_holders[stream_id]
-                self.current_streams[stream_id].thread.join()
-                del self.current_streams[stream_id]
-                del self.current_frames[stream_id]
+        self.current_streams[stream_id].thread.join()
 
     def __is_receiver(self, stream_id: str):
         return self.current_streams[stream_id].port != 0
@@ -191,6 +189,9 @@ class Client:
         finally:
             sock.close()
             self.current_streams[stream_id].event.set()
+            with self.__lock:
+                del self.current_streams[stream_id]
+                del self.current_frames[stream_id]
 
     def trigger(self, port=DEFAULT_TRIGGER_SERVER_PORT):
         sock = socket.socket()

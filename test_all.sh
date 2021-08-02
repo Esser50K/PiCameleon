@@ -5,6 +5,7 @@ docker run -dt --rm --entrypoint /bin/bash \
 
 docker cp tests picameleon_test:/tests
 docker cp test_all.py picameleon_test:/test_all.py
+docker exec picameleon_test /bin/bash -c 'pip3 install picameleon'
 docker exec picameleon_test /bin/bash -c 'cd / && python3 -u test_all.py'
 
 docker stop picameleon_test

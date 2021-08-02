@@ -1,7 +1,4 @@
-import sys
-sys.path.append("/picameleon")
-sys.path.append("../picameleon")
-from client.client import Client
+from picameleon import Client
 import unittest
 from unittest.mock import MagicMock, patch, call
 from struct import pack
