@@ -36,13 +36,13 @@ Example configurations can be found in the [configs](picameleon/configs) folder.
 Build the container locally (takes a while but should be accelerated through piwheels):
 
 ```
-docker built -t picameleon:latest .
+docker build -t picameleon:latest .
 ```
 
 in case you are building it for the raspberrypi zero you need to specify the correct Dockerfile:
 
 ```
-docker built -t picameleon:latest -f Dockerfile.zero .
+docker build -t picameleon:latest -f Dockerfile.zero .
 ```
 
 
